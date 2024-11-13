@@ -7,20 +7,42 @@ namespace battaglianavale
         public Form1()
         {
             InitializeComponent();
+            inGame = false;
             turno = true;
+            hit = false;
             rotazione = 0;
             lunghezza = 0;
             placingNave = false;
             navi1 = new List<CNave>();
             navi2 = new List<CNave>();
+            revealed1 = new DataGridView();
+            revealed2 = new DataGridView();
+            concealed1 = new DataGridView();
+            concealed2 = new DataGridView();
+            concealed1.RowCount = 10;
+            concealed1.ColumnCount = 10;
+            concealed2.RowCount = 10;
+            concealed2.ColumnCount = 10;
+            revealed1.RowCount = 10;
+            revealed1.ColumnCount = 10;
+            revealed2.RowCount = 10;
+            revealed2.ColumnCount = 10;
         }
 
+        bool inGame;
         bool turno; // true - giocatore 1; false - giocatore 2;
+        bool hit;
         int rotazione;
         int lunghezza;
         bool placingNave;
         List<CNave> navi1;
         List<CNave> navi2;
+        CGioco giocatore1;
+        CGioco giocatore2;
+        DataGridView revealed1;
+        DataGridView revealed2;
+        DataGridView concealed1;
+        DataGridView concealed2;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -68,7 +90,7 @@ namespace battaglianavale
 
         private void CellSelected(object? sender, DataGridViewCellEventArgs e)
         {
-            if (placingNave && lunghezza > 0) 
+            if (placingNave && lunghezza > 0) //piazzamento navi
             {
                 if (CheckPlaceable(e.ColumnIndex, e.RowIndex, lunghezza, rotazione, (sender as DataGridView).ColumnCount - 1, (sender as DataGridView).RowCount - 1)) 
                 {
@@ -112,16 +134,89 @@ namespace battaglianavale
 
                         if (CheckIfReady()) 
                         {
-                            SwapGrids(dataGridView1, dataGridView2);
-                            ResetButtons();
-                            turno = false;
-                        }
+                            if (turno) 
+                            {
+                                giocatore1 = new CGioco(navi1);
+                                LoadGrid(dataGridView1, revealed1);
+                                SwapGrids(dataGridView1, dataGridView2);
+                                ResetButtons();
+                                turno = false;
+                            }
+                            else 
+                            {
+                                giocatore2 = new CGioco(navi2);
+                                LoadGrid(dataGridView1, revealed2);
+                                SwapGrids(dataGridView1, dataGridView2);
+                                inGame = true;
 
+                                dataGridView1.CellClick += giocatore1.NewMove;
+
+                                giocatore1.OnHit += HitHandler;
+                                giocatore1.OnDone += DoneHandler;
+                                giocatore2.OnHit += HitHandler;
+                                giocatore2.OnDone += DoneHandler;
+
+                                LoadGrid(concealed2, dataGridView1);
+                            }
+
+                            //rimasto a: cercare di capire perché non entra nell'else
+                        }
                     }           
+                }
+            } else if (inGame) 
+            {
+                if (turno) 
+                {
+                    //per il prossimo turno
+                    dataGridView1.CellClick += giocatore2.NewMove;
+                    dataGridView1.CellClick -= giocatore1.NewMove;
+                    turno = false;
+                }
+                else 
+                {
+                    //per il prossimo turno
+                    dataGridView1.CellClick += giocatore1.NewMove;
+                    dataGridView1.CellClick -= giocatore2.NewMove;
+                    turno = false;
                 }
             }
 
             label2.Text = $"X: {e.ColumnIndex}; Y: {e.RowIndex}";
+        }
+
+        private void HitHandler(object? sender, NaviEventArgs e) 
+        {
+            hit = true;
+        }
+
+        private void DoneHandler(object? sender, DataGridViewCellEventArgs e) 
+        {
+            if (hit) 
+            {
+                dataGridView1[e.RowIndex, e.ColumnIndex].Style.BackColor = Color.Red;
+                dataGridView1[e.RowIndex, e.ColumnIndex].Value = "hit";
+                if (sender == giocatore1) 
+                {
+                    
+                }
+                else 
+                {
+
+                }
+            } else 
+            {
+                dataGridView1[e.RowIndex, e.ColumnIndex].Style.BackColor = Color.Gray;
+                dataGridView1[e.RowIndex, e.ColumnIndex].Value = "miss";
+                if (sender == giocatore1) 
+                {
+                    
+                }
+                else 
+                {
+                    concealed1[e.RowIndex, e.ColumnIndex].Style.BackColor = Color.Gray;
+                    concealed1[e.RowIndex, e.ColumnIndex].Value = "miss";
+                }
+            }
         }
 
         private void ResetButtons() 
@@ -135,6 +230,11 @@ namespace battaglianavale
             btnNave2.Text = "2x Navi da 2";
             btnNave3.Text = "2x Navi da 3";
             btnNave4.Text = "1x Nave da 4";
+        }
+
+        private void LoadGrid(DataGridView loadFrom, DataGridView loadTo) 
+        {
+            loadTo = loadFrom;
         }
 
         private void SwapGrids(DataGridView grid1, DataGridView grid2) 

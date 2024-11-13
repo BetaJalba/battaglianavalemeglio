@@ -49,25 +49,32 @@
             // 
             // dataGridView1
             // 
+            dataGridView1.ColumnHeadersHeight = 29;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridView1.Location = new Point(151, 25);
+            dataGridView1.Location = new Point(173, 33);
+            dataGridView1.Margin = new Padding(3, 4, 3, 4);
             dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersWidth = 51;
             dataGridView1.Size = new Size(400, 400);
             dataGridView1.TabIndex = 0;
             // 
             // dataGridView2
             // 
+            dataGridView2.ColumnHeadersHeight = 29;
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridView2.Location = new Point(557, 225);
+            dataGridView2.Location = new Point(637, 233);
+            dataGridView2.Margin = new Padding(3, 4, 3, 4);
             dataGridView2.Name = "dataGridView2";
+            dataGridView2.RowHeadersWidth = 51;
             dataGridView2.Size = new Size(200, 200);
             dataGridView2.TabIndex = 1;
             // 
             // btnPiazza
             // 
-            btnPiazza.Location = new Point(28, 97);
+            btnPiazza.Location = new Point(33, 33);
+            btnPiazza.Margin = new Padding(3, 4, 3, 4);
             btnPiazza.Name = "btnPiazza";
-            btnPiazza.Size = new Size(80, 26);
+            btnPiazza.Size = new Size(91, 35);
             btnPiazza.TabIndex = 2;
             btnPiazza.Text = "Piazza Navi";
             btnPiazza.UseVisualStyleBackColor = true;
@@ -84,16 +91,18 @@
             panel1.Controls.Add(button1);
             panel1.Controls.Add(btnNave2);
             panel1.Controls.Add(btnNave1);
-            panel1.Location = new Point(12, 149);
+            panel1.Location = new Point(12, 95);
+            panel1.Margin = new Padding(3, 4, 3, 4);
             panel1.Name = "panel1";
-            panel1.Size = new Size(124, 276);
+            panel1.Size = new Size(142, 338);
             panel1.TabIndex = 3;
             // 
             // btnNave4
             // 
-            btnNave4.Location = new Point(17, 121);
+            btnNave4.Location = new Point(19, 161);
+            btnNave4.Margin = new Padding(3, 4, 3, 4);
             btnNave4.Name = "btnNave4";
-            btnNave4.Size = new Size(89, 23);
+            btnNave4.Size = new Size(102, 31);
             btnNave4.TabIndex = 8;
             btnNave4.Text = "1x Nave da 4";
             btnNave4.UseVisualStyleBackColor = true;
@@ -101,9 +110,10 @@
             // 
             // btnNave3
             // 
-            btnNave3.Location = new Point(17, 90);
+            btnNave3.Location = new Point(19, 120);
+            btnNave3.Margin = new Padding(3, 4, 3, 4);
             btnNave3.Name = "btnNave3";
-            btnNave3.Size = new Size(89, 23);
+            btnNave3.Size = new Size(102, 31);
             btnNave3.TabIndex = 7;
             btnNave3.Text = "2x Navi da 3";
             btnNave3.UseVisualStyleBackColor = true;
@@ -112,18 +122,19 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(18, 165);
+            label1.Location = new Point(21, 220);
             label1.Name = "label1";
-            label1.Size = new Size(62, 15);
+            label1.Size = new Size(79, 20);
             label1.TabIndex = 6;
             label1.Text = "Rotazione:";
             // 
             // button3
             // 
-            button3.Font = new Font("SimSun", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            button3.Location = new Point(50, 228);
+            button3.Font = new Font("SimSun", 9F);
+            button3.Location = new Point(57, 304);
+            button3.Margin = new Padding(3, 4, 3, 4);
             button3.Name = "button3";
-            button3.Size = new Size(20, 20);
+            button3.Size = new Size(23, 27);
             button3.TabIndex = 5;
             button3.Text = "▼";
             button3.UseVisualStyleBackColor = true;
@@ -131,10 +142,11 @@
             // 
             // button4
             // 
-            button4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            button4.Location = new Point(32, 210);
+            button4.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            button4.Location = new Point(37, 280);
+            button4.Margin = new Padding(3, 4, 3, 4);
             button4.Name = "button4";
-            button4.Size = new Size(20, 20);
+            button4.Size = new Size(23, 27);
             button4.TabIndex = 4;
             button4.Text = "<";
             button4.UseVisualStyleBackColor = true;
@@ -142,10 +154,11 @@
             // 
             // button2
             // 
-            button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            button2.Location = new Point(67, 210);
+            button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            button2.Location = new Point(77, 280);
+            button2.Margin = new Padding(3, 4, 3, 4);
             button2.Name = "button2";
-            button2.Size = new Size(20, 20);
+            button2.Size = new Size(23, 27);
             button2.TabIndex = 3;
             button2.Text = ">";
             button2.UseVisualStyleBackColor = true;
@@ -153,10 +166,11 @@
             // 
             // button1
             // 
-            button1.Font = new Font("SimSun", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            button1.Location = new Point(49, 192);
+            button1.Font = new Font("SimSun", 9F);
+            button1.Location = new Point(56, 256);
+            button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
-            button1.Size = new Size(20, 20);
+            button1.Size = new Size(23, 27);
             button1.TabIndex = 2;
             button1.Text = "▲";
             button1.UseVisualStyleBackColor = true;
@@ -164,9 +178,10 @@
             // 
             // btnNave2
             // 
-            btnNave2.Location = new Point(17, 59);
+            btnNave2.Location = new Point(19, 79);
+            btnNave2.Margin = new Padding(3, 4, 3, 4);
             btnNave2.Name = "btnNave2";
-            btnNave2.Size = new Size(89, 23);
+            btnNave2.Size = new Size(102, 31);
             btnNave2.TabIndex = 1;
             btnNave2.Text = "2x Navi da 2";
             btnNave2.UseVisualStyleBackColor = true;
@@ -174,9 +189,10 @@
             // 
             // btnNave1
             // 
-            btnNave1.Location = new Point(17, 28);
+            btnNave1.Location = new Point(19, 37);
+            btnNave1.Margin = new Padding(3, 4, 3, 4);
             btnNave1.Name = "btnNave1";
-            btnNave1.Size = new Size(89, 23);
+            btnNave1.Size = new Size(102, 31);
             btnNave1.TabIndex = 0;
             btnNave1.Text = "1x Nave da 1";
             btnNave1.UseVisualStyleBackColor = true;
@@ -184,22 +200,23 @@
             // 
             // label2
             // 
-            label2.Location = new Point(557, 25);
+            label2.Location = new Point(637, 33);
             label2.Name = "label2";
-            label2.Size = new Size(200, 185);
+            label2.Size = new Size(200, 181);
             label2.TabIndex = 4;
             label2.Text = "label2";
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(914, 471);
             Controls.Add(label2);
             Controls.Add(panel1);
             Controls.Add(btnPiazza);
             Controls.Add(dataGridView2);
             Controls.Add(dataGridView1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;

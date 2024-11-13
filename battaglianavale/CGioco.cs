@@ -8,10 +8,9 @@ namespace battaglianavale
 {
     internal class CGioco
     {
-        //int[,] grid;
         List<CNave> navi;
 
-        public event EventHandler OnMiss;
+        public event EventHandler<DataGridViewCellEventArgs> OnDone;
         public event EventHandler<NaviEventArgs> OnHit;
         public event EventHandler OnSconfitta;
 
@@ -25,9 +24,31 @@ namespace battaglianavale
                 OnHit += nave.ReplyAttacco;
                 nave.OnNaveDistrutta += RimuoviNave;
             }
+        }
 
-            //TO DO
-            //il forms deve iscriversi agli eventi OnHit e OnMiss
+        public void NewMove(object? sender, DataGridViewCellEventArgs e) 
+        {
+            foreach(CNave nave in navi) 
+            {
+                int[,] toCheck = nave.GetAllCoordinates();
+                for (int i = 0; i < 2; i++) 
+                {
+                    if (toCheck[i, 0] == e.ColumnIndex && toCheck[i, 1] == e.RowIndex) 
+                    {
+                        NaviEventArgs navi = new NaviEventArgs();
+                        navi.Id = nave.Id;
+                        OnHitHandler(navi);
+                    }
+
+                    OnDone(null, e);
+                }
+            }
+        }
+
+        private void OnHitHandler(NaviEventArgs args) 
+        {
+            EventHandler<NaviEventArgs> handler = OnHit;
+            OnHit?.Invoke(this, args);
         }
 
         private void RimuoviNave(object? sender, NaviEventArgs args) 
