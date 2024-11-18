@@ -2,9 +2,9 @@ using System.CodeDom;
 
 namespace battaglianavale
 {
-    public partial class Form1 : Form
+    public partial class Form2 : Form
     {
-        public Form1()
+        public Form2()
         {
             InitializeComponent();
             inGame = false;
@@ -27,10 +27,14 @@ namespace battaglianavale
             revealed1.ColumnCount = 10;
             revealed2.RowCount = 10;
             revealed2.ColumnCount = 10;
+            direzione = -1;
+            botX = -1;
+            botY = -1;
+            consecutiveHits = 0;
         }
 
         bool inGame;
-        bool turno; // true - giocatore 1; false - giocatore 2;
+        bool turno; // true - giocatore 1; false - bot;
         bool hit;
         int rotazione;
         int lunghezza;
@@ -43,6 +47,8 @@ namespace battaglianavale
         DataGridView revealed2;
         DataGridView concealed1;
         DataGridView concealed2;
+        int direzione, botX, botY;
+        int consecutiveHits;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -160,8 +166,9 @@ namespace battaglianavale
                                 giocatore2.OnDone += DoneHandler;
                                 giocatore1.OnSconfitta += SconfittaHandler;
                                 giocatore2.OnSconfitta += SconfittaHandler;
-                                
+                                giocatore2.OnHit += CalcolaMossaDopoHit;
 
+                                CalcolaMossaRandom();
                                 ProssimoTurno();
                             }
                         }
@@ -170,6 +177,94 @@ namespace battaglianavale
             }
 
             label2.Text = $"X: {e.ColumnIndex}; Y: {e.RowIndex}";
+        }
+
+        private void CalcolaMossaDopoHit(object? sender, NaviEventArgs e) 
+        {
+            Random rand = new Random();
+
+            consecutiveHits++;
+
+            botX = e.X;
+            botY = e.Y;
+
+            if (consecutiveHits < 2) 
+            {
+                switch (rand.Next(4))
+                {
+                    case 0:
+                        botY--;
+                        if (botY < 0) 
+                            botY++;
+                        rotazione = 0;
+                        break;
+                    case 1:
+                        botX++;
+                        if (botX > 9)
+                            botX--;
+                        rotazione = 1;
+                        break;
+                    case 2:
+                        if (botY > 9) 
+                            botY--;
+                        botY++;
+                        rotazione = 2;
+                        break;
+                    case 3:
+                        botX--;
+                        if (botX < 0)
+                            botX++;
+                        rotazione = 3;
+                        break;
+                }
+            } else //se azzecca 2 volte di fila continua nella stessa direzione
+            {
+                switch (rotazione) 
+                {
+                    case 0:
+                        botY--;
+                        if (botY < 0)
+                            botY++;
+                        rotazione = 0;
+                        break;
+                    case 1:
+                        botX++;
+                        if (botX > 9)
+                            botX--;
+                        rotazione = 1;
+                        break;
+                    case 2:
+                        if (botY > 9)
+                            botY--;
+                        botY++;
+                        rotazione = 2;
+                        break;
+                    case 3:
+                        botX--;
+                        if (botX < 0)
+                            botX++;
+                        rotazione = 3;
+                        break;
+                }
+            }
+
+            if (botX == e.X) 
+            {
+                CalcolaMossaRandom();
+                consecutiveHits = 0;
+            }
+        }
+
+        private void CalcolaMossaRandom() 
+        {
+            Random rand = new Random();
+
+            do 
+            {
+                botX = rand.Next(10);
+                botY = rand.Next(10);
+            } while (concealed1[botX, botY].Value == "hit" || concealed1[botX, botY].Value == "miss");
+            //placement nave
         }
 
         private void SconfittaHandler(object? sender, EventArgs e) 
@@ -217,6 +312,8 @@ namespace battaglianavale
                     revealed2[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
                     revealed2[e.ColumnIndex, e.RowIndex].Value = "miss";
                     //LoadGrid(dataGridView1, concealed2); //giocatore 1 guarda la griglia del gioc 2 nascosta
+                    consecutiveHits = 0;
+                    CalcolaMossaRandom();
                 }
                 else
                 {
@@ -244,6 +341,7 @@ namespace battaglianavale
                     dataGridView1.CellClick -= giocatore2.NewMove;
                     dataGridView1.CellClick += giocatore1.NewMove;
                     turno = false;
+
                     MessageBox.Show("Turno P1");
                 }
                 else
@@ -257,7 +355,13 @@ namespace battaglianavale
                     turno = true;
 
                     MessageBox.Show("Turno P2");
+
+                    //bot
+                    DataGridViewCellEventArgs args = new DataGridViewCellEventArgs(botX, botY);
+                    giocatore2.NewMove(this, args);
                 }
+
+                //todo vedere perché tutto è al contrarios
             }
         }
 
