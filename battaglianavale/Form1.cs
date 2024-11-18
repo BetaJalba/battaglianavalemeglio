@@ -1,4 +1,5 @@
 using System.CodeDom;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace battaglianavale
 {
@@ -90,7 +91,7 @@ namespace battaglianavale
 
         private void CellSelected(object? sender, DataGridViewCellEventArgs e)
         {
-            if (placingNave && lunghezza > 0) //piazzamento navi
+            if (!inGame && placingNave && lunghezza > 0) //piazzamento navi
             {
                 if (CheckPlaceable(e.ColumnIndex, e.RowIndex, lunghezza, rotazione, (sender as DataGridView).ColumnCount - 1, (sender as DataGridView).RowCount - 1))
                 {
@@ -102,17 +103,17 @@ namespace battaglianavale
                     {
                         //nave 100% possibile
                         toAdd.Placed();
-                        if (turno)
+                        if (turno) // turno giocatore 1
                             navi1.Add(toAdd);
-                        else
+                        else // turno giocatore 2
                             navi2.Add(toAdd);
 
                         for (int i = 0; i < lunghezza; i++)
                         {
                             (sender as DataGridView)[toDraw[i, 0], toDraw[i, 1]].Style.BackColor = Color.RebeccaPurple;
-                            if (turno)
+                            if (turno) // turno giocatore 1
                                 (sender as DataGridView)[toDraw[i, 0], toDraw[i, 1]].Value = navi1.Last().Id;
-                            else
+                            else // turno giocatore 2
                                 (sender as DataGridView)[toDraw[i, 0], toDraw[i, 1]].Value = navi2.Last().Id;
                         }
 
@@ -134,25 +135,24 @@ namespace battaglianavale
 
                         if (CheckIfReady())
                         {
-                            if (turno)
+                            if (turno) // turno giocatore 1
                             {
-                                giocatore1 = new CGioco(navi2);
+                                giocatore1 = new CGioco(navi1);
                                 LoadGrid(dataGridView1, revealed1);
                                 SwapGrids(dataGridView1, dataGridView2);
                                 ResetButtons();
                                 turno = false;
                             }
-                            else
+                            else // turno giocatore 2
                             {
                                 //inizia gioco
 
-                                giocatore2 = new CGioco(navi1);
+                                giocatore2 = new CGioco(navi2);
                                 LoadGrid(dataGridView1, revealed2); // carica nel revealed
-                                turno = true;
                                 inGame = true;
 
-                                dataGridView1.CellClick -= CellSelected;
-                                dataGridView1.CellClick += giocatore2.NewMove;
+                                //dataGridView1.CellClick -= CellSelected;
+                                //dataGridView1.CellClick += giocatore2.NewMove;
 
                                 giocatore1.OnHit += HitHandler;
                                 giocatore2.OnHit += HitHandler;
@@ -160,16 +160,34 @@ namespace battaglianavale
                                 giocatore2.OnDone += DoneHandler;
                                 giocatore1.OnSconfitta += SconfittaHandler;
                                 giocatore2.OnSconfitta += SconfittaHandler;
-                                
 
-                                ProssimoTurno();
+                                ProssimoTurno(); // turno == false quindi inizia giocatore 1
                             }
                         }
                     }
                 }
             }
+            else if (inGame)
+            {
+                if (dataGridView1[e.ColumnIndex, e.RowIndex].Value == "miss" || dataGridView1[e.ColumnIndex, e.RowIndex].Value == "hit") // turno giocatore 1
+                {
+                    if (turno) // giocatore 2 subisce
+                        giocatore2.MossaConsentita = false;
+                    else // giocatore 1 subisce
+                        giocatore1.MossaConsentita = false;
 
-            label2.Text = $"X: {e.ColumnIndex}; Y: {e.RowIndex}";
+                    MessageBox.Show("Casella già colpita!");
+                }
+                else
+                {
+                    if (turno)
+                        giocatore2.MossaConsentita = true;
+                    else
+                        giocatore1.MossaConsentita = true;
+                }
+            }
+
+            label2.Text = $"Punto selezionato -> (X: {e.ColumnIndex}; Y: {e.RowIndex})\n";
         }
 
         private void SconfittaHandler(object? sender, EventArgs e) 
@@ -178,6 +196,7 @@ namespace battaglianavale
                 MessageBox.Show("Giocatore 2 ha vinto!");
             else
                 MessageBox.Show("Giocatore 1 ha vinto!");
+            this.Close();
         }
 
         private void HitHandler(object? sender, NaviEventArgs e)
@@ -189,43 +208,50 @@ namespace battaglianavale
         {
             if (hit)
             {
-                if (turno)
-                {
-                    concealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
-                    concealed1[e.ColumnIndex, e.RowIndex].Value = "hit";
-                    revealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
-                    revealed1[e.ColumnIndex, e.RowIndex].Value = "hit";
-                    //LoadGrid(dataGridView1, concealed2); //giocatore 1 guarda la griglia del gioc 2 nascosta
-                }
-                else
+                if (turno) // turno giocatore 1
                 {
                     concealed2[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
                     concealed2[e.ColumnIndex, e.RowIndex].Value = "hit";
                     revealed2[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
                     revealed2[e.ColumnIndex, e.RowIndex].Value = "hit";
+                    //LoadGrid(dataGridView1, concealed2); //giocatore 1 guarda la griglia del gioc 2 nascosta
+                }
+                else // turno giocatore 1
+                {
+                    concealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
+                    concealed1[e.ColumnIndex, e.RowIndex].Value = "hit";
+                    revealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Red;
+                    revealed1[e.ColumnIndex, e.RowIndex].Value = "hit";
                     //LoadGrid(dataGridView1, concealed1); //giocatore 1 guarda la griglia del gioc 2 nascosta
                 }
 
+                // TO DO aggiungere suono hit
+
+                label2.Text += "Si è colpita una nave!";
                 hit = false;
             }
             else
             {
-                if (turno)
-                {
-                    concealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
-                    concealed1[e.ColumnIndex, e.RowIndex].Value = "miss";
-                    revealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
-                    revealed1[e.ColumnIndex, e.RowIndex].Value = "miss";
-                    //LoadGrid(dataGridView1, concealed2); //giocatore 1 guarda la griglia del gioc 2 nascosta
-                }
-                else
+                if (turno) // turno giocatore 1
                 {
                     concealed2[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
                     concealed2[e.ColumnIndex, e.RowIndex].Value = "miss";
                     revealed2[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
                     revealed2[e.ColumnIndex, e.RowIndex].Value = "miss";
+                    //LoadGrid(dataGridView1, concealed2); //giocatore 1 guarda la griglia del gioc 2 nascosta   
+                }
+                else // turno giocatore 2
+                {
+                    concealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
+                    concealed1[e.ColumnIndex, e.RowIndex].Value = "miss";
+                    revealed1[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.Gray;
+                    revealed1[e.ColumnIndex, e.RowIndex].Value = "miss";
                     //LoadGrid(dataGridView1, concealed1);
                 }
+
+                // TO DO aggiungere suono vuoto
+
+                label2.Text += "Colpo a vuoto!";
             }
 
             ProssimoTurno();
@@ -235,29 +261,29 @@ namespace battaglianavale
         {
             if (inGame)
             {
-                if (turno) // giocatore 2 finisce il turno
+                if (turno) // giocatore 1 finisce il turno
                 {
                     // per il prossimo turno
-                    LoadGrid(concealed2, dataGridView1); // carica in dgv1 lo schermo nascosto del pl1
-                    LoadGrid(revealed1, dataGridView2); // carica in dgv2 lo schermo delle navi del pl2
+                    LoadGrid(concealed1, dataGridView1); // carica in dgv1 lo schermo nascosto del pl1
+                    LoadGrid(revealed2, dataGridView2); // carica in dgv2 lo schermo delle navi del pl2
 
-                    dataGridView1.CellClick -= giocatore2.NewMove;
-                    dataGridView1.CellClick += giocatore1.NewMove;
+                    dataGridView1.CellClick -= giocatore2.NewMove; // MASSIVE CONFUSIONE DA PARTE MIA PERCHé I NOMI ERANO MOLTO CONFUSI, sarabbe meglio rinominato in NewHit
+                    dataGridView1.CellClick += giocatore1.NewMove; // ma non ho voglia
                     turno = false;
 
-                    MessageBox.Show("Turno P1");
+                    MessageBox.Show("Turno P2");
                 }
-                else // giocatore 1 finisce il turno
+                else // giocatore 2 finisce il turno
                 {
                     // per il prossimo turno
-                    LoadGrid(concealed1, dataGridView1);
-                    LoadGrid(revealed2, dataGridView2);
+                    LoadGrid(concealed2, dataGridView1);
+                    LoadGrid(revealed1, dataGridView2);
 
                     dataGridView1.CellClick -= giocatore1.NewMove;
                     dataGridView1.CellClick += giocatore2.NewMove;
                     turno = true;
 
-                    MessageBox.Show("Turno P2");
+                    MessageBox.Show("Turno P1");
                 }
             }
         }
@@ -324,14 +350,17 @@ namespace battaglianavale
 
         private bool CheckIfReady()
         {
-            if (turno)
+            if (turno) // turno giocatore 1
             {
                 if (navi1.Count == 6)
                     return true;
             }
-            else
+            else // turno giocatore 2
+            {
                 if (navi2.Count == 6)
-                return true;
+                    return true;
+            }
+                
             return false;
         }
 

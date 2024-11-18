@@ -37,9 +37,11 @@ namespace battaglianavale
 
         public void ReplyAttacco(object? sender, NaviEventArgs args) 
         {
-            if (args.Id == id)
+            if (args.Id == id) 
+            {
                 vita--;
-            CheckVivo();
+                CheckVivo();
+            }
         }
 
         private void CheckVivo() 

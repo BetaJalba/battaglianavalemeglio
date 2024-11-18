@@ -14,9 +14,10 @@ namespace battaglianavale
         public event EventHandler<NaviEventArgs> OnHit;
         public event EventHandler OnSconfitta;
 
+        public bool MossaConsentita { get; set; }
+
         public CGioco(List<CNave> navi)
         {
-            //this.grid = grid;
             this.navi = navi;
 
             foreach (CNave nave in navi)
@@ -28,25 +29,28 @@ namespace battaglianavale
 
         public void NewMove(object? sender, DataGridViewCellEventArgs e)
         {
-            foreach (CNave nave in navi)
+            if (MossaConsentita) 
             {
-                int[,] toCheck = nave.GetAllCoordinates();
-                for (int i = 0; i < toCheck.GetLength(0); i++)
+                foreach (CNave nave in navi)
                 {
-                    if (toCheck[i, 0] == e.ColumnIndex && toCheck[i, 1] == e.RowIndex)
+                    int[,] toCheck = nave.GetAllCoordinates();
+                    for (int i = 0; i < toCheck.GetLength(0); i++)
                     {
-                        NaviEventArgs navi = new NaviEventArgs();
-                        navi.Id = nave.Id;
-                        navi.X = e.ColumnIndex;
-                        navi.Y = e.RowIndex;
-                        OnHitHandler(navi);
-                        OnDone(null, e);
-                        return;
+                        if (toCheck[i, 0] == e.ColumnIndex && toCheck[i, 1] == e.RowIndex)
+                        {
+                            NaviEventArgs navi = new NaviEventArgs();
+                            navi.Id = nave.Id;
+                            navi.X = e.ColumnIndex;
+                            navi.Y = e.RowIndex;
+                            OnHitHandler(navi);
+                            OnDone(null, e);
+                            return;
+                        }
                     }
                 }
-            }
 
-            OnDone(null, e);
+                OnDone(null, e);
+            }
         }
 
         private void OnHitHandler(NaviEventArgs args)
@@ -57,7 +61,7 @@ namespace battaglianavale
 
         private void RimuoviNave(object? sender, NaviEventArgs args)
         {
-            foreach (CNave nave in navi)
+            foreach (CNave nave  in navi)
             {
                 if (nave.Id == args.Id)
                 {
